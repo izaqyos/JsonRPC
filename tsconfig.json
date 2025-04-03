@@ -1,15 +1,18 @@
 {
   "compilerOptions": {
-    "target": "ES2017",                         /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
-    "module": "CommonJS",                     /* Specify what module code is generated. */
+    "target": "ES2018",                         /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
+    "module": "commonjs",                     /* Specify what module code is generated. */
+    "lib": ["es2018"],
     "outDir": "./dist",                        /* Specify an output folder for all emitted files. */
     "rootDir": "./src",                       /* Specify the root folder within your source files. */
-    "esModuleInterop": true,                  /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables `allowSyntheticDefaultImports` for type compatibility. */
-    "forceConsistentCasingInFileNames": true, /* Ensure that casing is correct in imports. */
     "strict": true,                           /* Enable all strict type-checking options. */
+    "esModuleInterop": true,                  /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables `allowSyntheticDefaultImports` for type compatibility. */
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "skipLibCheck": true,                     /* Skip type checking all .d.ts files. */
+    "forceConsistentCasingInFileNames": true, /* Ensure that casing is correct in imports. */
     "resolveJsonModule": true               /* Enable importing .json files */
   },
   "include": ["src/**/*"],                      /* Specifies an array of filenames or patterns to include in the program */
-  "exclude": ["node_modules", "**/*.spec.ts"]   /* Specifies an array of filenames or patterns that should be skipped when resolving include */
+  "exclude": ["node_modules", "dist"]   /* Specifies an array of filenames or patterns that should be skipped when resolving include */
 } 
