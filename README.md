@@ -1,84 +1,100 @@
-# JSON-RPC CRUD Example (TypeScript)
+# JSON-RPC CRUD Example
 
-This project demonstrates a simple Create, Read, Update, Delete (CRUD) application using JSON-RPC 2.0 over HTTP.
-
-- The server is built with Node.js, Express, and the `json-rpc-2.0` library.
-- The client is built with Node.js, Axios, and the `json-rpc-2.0` library.
+This project provides a modern TypeScript implementation of a JSON-RPC 2.0 service demonstrating basic Create, Read, Update, and Delete (CRUD) operations. It features a Node.js/Express server, a simple client, unit tests using Jest, and interactive API documentation via Swagger UI.
 
 ## Prerequisites
 
-- Node.js (v16 or later recommended)
-- npm (usually comes with Node.js)
-- HTTPie (optional, for running HTTPie request examples)
+- Node.js (v16 or higher)
+- npm (comes with Node.js)
+- Git (for cloning the repository)
+- `curl` or HTTPie (for command-line requests)
 
 ## Setup
 
-1. **Clone the repository (or ensure you have the generated files):**
-   ```bash
-   # If applicable
-   git clone <repository-url>
-   cd <repository-directory>
-   ```
-
-2. **Install dependencies:**
-   ```bash
-   npm install
-   ```
-
-3. **Optional: Install HTTPie for alternative request method:**
-   ```bash
-   brew install httpie
-   ```
+1.  **Clone the repository:**
+    ```bash
+    git clone <repository-url>
+    cd <repository-directory>
+    ```
+2.  **Install dependencies:**
+    ```bash
+    npm install
+    ```
 
 ## Running the Example
 
-You'll need two terminal windows.
+1.  **Build the project:**
+    ```bash
+    npm run build
+    ```
+2.  **Start the server:**
+    ```bash
+    npm start
+    ```
+    The server will start on `http://localhost:5001`.
 
-**Terminal 1: Start the Server**
-```bash
-npm run dev:server
-```
+3.  **Run the client (optional example):**
+    In a separate terminal:
+    ```bash
+    npm run start:client
+    ```
 
-The server will start and listen on `http://localhost:5001/jsonrpc`.
+## API Documentation (Swagger UI)
 
-**Terminal 2: Run the Client**
-```bash
-npm run start:client
-```
+This project uses Swagger UI to provide interactive API documentation.
+
+### Accessing the Documentation
+
+Once the server is running (`npm start`), you can access the Swagger UI in your browser at:
+
+[http://localhost:5001/api-docs](http://localhost:5001/api-docs)
+
+### Features
+
+The Swagger UI allows you to:
+*   **Explore Endpoints:** View the available JSON-RPC methods (`create_item`, `read_item`, etc.) exposed through the single `/jsonrpc` endpoint.
+*   **View Schemas:** Inspect the structure of request parameters (`params`) and response objects (`result`, `error`) for each method. It uses schemas derived from the TypeScript classes and validation decorators.
+*   **Try it Out:** Execute JSON-RPC requests directly from the browser interface to test the API functionality.
+*   **View Specification:** Access the raw OpenAPI 3.1 specification in JSON format at [http://localhost:5001/api-docs.json](http://localhost:5001/api-docs.json).
+
+### Implementation Details
+
+*   **Swagger UI Express:** The `swagger-ui-express` library is used to serve the Swagger UI interface.
+*   **Dynamic Specification:** The OpenAPI specification is generated dynamically at runtime using `routing-controllers-openapi` and `class-validator-jsonschema`. It inspects the `routing-controllers` decorators (`@JsonController`, `@Post`, `@Body`, etc.) and `class-validator` decorators (`@IsString`, `@IsOptional`, etc.) in the `src/server.ts` file to build the API documentation.
+*   **Configuration:** The Swagger setup is configured in `src/swagger.ts`.
 
 ## Making Requests
 
-You can use either curl or HTTPie to make requests:
+You can interact with the JSON-RPC server using tools like `curl` or HTTPie. Examples are provided in `requests.sh` (curl) and `requests-httpie.sh` (HTTPie).
 
 **Using curl:**
 ```bash
-./requests.sh
+./requests.sh create name="My First Item" description="Details about the item"
+./requests.sh list
+# ... and other commands
 ```
 
 **Using HTTPie:**
+Ensure HTTPie is installed (`brew install httpie` or `pip install httpie`).
 ```bash
-./requests-httpie.sh
+./requests-httpie.sh create name="My First Item" description="Details about the item"
+./requests-httpie.sh list
+# ... and other commands
 ```
-
-Both scripts demonstrate all CRUD operations including:
-- Clearing all data
-- Creating items
-- Reading items
-- Updating items
-- Deleting items
-- Listing all items
 
 ## Testing
 
-Run the test suite:
-```bash
-npm test
-```
+The project uses Jest for unit and integration testing.
 
-This will run both server and client tests, which include:
-- Server method tests
-- Client request/response tests
-- Error handling tests
+*   **Run all tests:**
+    ```bash
+    npm test
+    ```
+*   **Run Swagger-specific tests:**
+    ```bash
+    npm run test:swagger
+    ```
+    These tests verify the OpenAPI specification generation (`tests/swagger/openapi.test.ts`) and the Swagger UI setup (`tests/swagger/swagger-ui.test.ts`).
 
 ## Project Structure
 
