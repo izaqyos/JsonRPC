@@ -1,0 +1,182 @@
+components:
+  schemas:
+    JsonRpcRequest:
+      properties:
+        jsonrpc:
+          type: string
+        method:
+          type: string
+        id:
+          type: string
+      type: object
+      required:
+        - jsonrpc
+        - method
+        - id
+    Item:
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+      type: object
+      required:
+        - id
+        - name
+    CreateItemParamsDto:
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+      type: object
+      required:
+        - name
+    ReadItemParamsDto:
+      properties:
+        id:
+          type: string
+      type: object
+      required:
+        - id
+    UpdateItemParamsDto:
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+      type: object
+      required:
+        - id
+        - name
+    DeleteItemParamsDto:
+      properties:
+        id:
+          type: string
+      type: object
+      required:
+        - id
+    CreateItemRequest:
+      properties:
+        params:
+          $ref: '#/definitions/CreateItemParamsDto'
+        jsonrpc:
+          type: string
+        method:
+          type: string
+        id:
+          type: string
+      type: object
+      required:
+        - params
+        - jsonrpc
+        - method
+        - id
+    ReadItemRequest:
+      properties:
+        params:
+          $ref: '#/definitions/ReadItemParamsDto'
+        jsonrpc:
+          type: string
+        method:
+          type: string
+        id:
+          type: string
+      type: object
+      required:
+        - params
+        - jsonrpc
+        - method
+        - id
+    UpdateItemRequest:
+      properties:
+        params:
+          $ref: '#/definitions/UpdateItemParamsDto'
+        jsonrpc:
+          type: string
+        method:
+          type: string
+        id:
+          type: string
+      type: object
+      required:
+        - params
+        - jsonrpc
+        - method
+        - id
+    DeleteItemRequest:
+      properties:
+        params:
+          $ref: '#/definitions/DeleteItemParamsDto'
+        jsonrpc:
+          type: string
+        method:
+          type: string
+        id:
+          type: string
+      type: object
+      required:
+        - params
+        - jsonrpc
+        - method
+        - id
+    ListItemsRequest:
+      properties:
+        params:
+          $ref: '#/definitions/NoParamsDto'
+        jsonrpc:
+          type: string
+        method:
+          type: string
+        id:
+          type: string
+      type: object
+      required:
+        - params
+        - jsonrpc
+        - method
+        - id
+    DeleteAllItemsRequest:
+      properties:
+        params:
+          $ref: '#/definitions/NoParamsDto'
+        jsonrpc:
+          type: string
+        method:
+          type: string
+        id:
+          type: string
+      type: object
+      required:
+        - params
+        - jsonrpc
+        - method
+        - id
+info:
+  title: JSON-RPC CRUD API
+  version: 1.0.0
+  description: A JSON-RPC 2.0 API for CRUD operations on items based on routing-controllers decorators.
+openapi: 3.0.0
+paths:
+  /jsonrpc:
+    post:
+      operationId: JsonRpcController.handleRequest
+      requestBody:
+        content:
+          application/json:
+            schema: {}
+        description: ''
+        required: false
+      responses:
+        '200':
+          content:
+            application/json: {}
+          description: Successful response
+      summary: JSON-RPC endpoint
+      tags:
+        - Json Rpc
+      description: Handles all JSON-RPC method calls
