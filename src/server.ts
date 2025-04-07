@@ -2,7 +2,8 @@ import 'reflect-metadata';
 import express from 'express';
 import { createExpressServer, JsonController, Post, Body } from 'routing-controllers';
 import { OpenAPI } from 'routing-controllers-openapi';
-import { IsString, IsOptional } from 'class-validator';
+import { IsString, IsOptional, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
 import { setupSwagger } from './swagger';
 
 // Base class for JSON-RPC requests
@@ -11,10 +12,10 @@ class JsonRpcRequest {
     jsonrpc: string = '2.0';
 
     @IsString()
-    method: string;
+    method!: string;
 
     @IsString()
-    id: string;
+    id!: string;
 
     constructor(method: string, id: string) {
         this.method = method;
@@ -25,10 +26,10 @@ class JsonRpcRequest {
 // Item class
 class Item {
     @IsString()
-    id: string;
+    id!: string;
 
     @IsString()
-    name: string;
+    name!: string;
 
     @IsString()
     @IsOptional()
@@ -41,56 +42,91 @@ class Item {
     }
 }
 
+// --- Define Parameter Classes ---
+
+class CreateItemParamsDto {
+    @IsString()
+    name!: string;
+
+    @IsString()
+    @IsOptional()
+    description?: string;
+}
+
+class ReadItemParamsDto {
+    @IsString()
+    id!: string;
+}
+
+class UpdateItemParamsDto {
+    @IsString()
+    id!: string;
+
+    @IsString()
+    name!: string;
+
+    @IsString()
+    @IsOptional()
+    description?: string;
+}
+
+class DeleteItemParamsDto {
+    @IsString()
+    id!: string;
+}
+
+// Empty class for methods with no specific params (still needed for typing)
+class NoParamsDto {}
+
 // Request DTOs
 class CreateItemRequest extends JsonRpcRequest {
-    params: {
-        name: string;
-        description?: string;
-    };
+    @ValidateNested()
+    @Type(() => CreateItemParamsDto)
+    params: CreateItemParamsDto;
 
-    constructor(id: string, params: { name: string; description?: string }) {
+    constructor(id: string, params: CreateItemParamsDto) {
         super('create_item', id);
         this.params = params;
     }
 }
 
 class ReadItemRequest extends JsonRpcRequest {
-    params: {
-        id: string;
-    };
+    @ValidateNested()
+    @Type(() => ReadItemParamsDto)
+    params: ReadItemParamsDto;
 
-    constructor(id: string, params: { id: string }) {
+    constructor(id: string, params: ReadItemParamsDto) {
         super('read_item', id);
         this.params = params;
     }
 }
 
 class UpdateItemRequest extends JsonRpcRequest {
-    params: {
-        id: string;
-        name: string;
-        description?: string;
-    };
+    @ValidateNested()
+    @Type(() => UpdateItemParamsDto)
+    params: UpdateItemParamsDto;
 
-    constructor(id: string, params: { id: string; name: string; description?: string }) {
+    constructor(id: string, params: UpdateItemParamsDto) {
         super('update_item', id);
         this.params = params;
     }
 }
 
 class DeleteItemRequest extends JsonRpcRequest {
-    params: {
-        id: string;
-    };
+    @ValidateNested()
+    @Type(() => DeleteItemParamsDto)
+    params: DeleteItemParamsDto;
 
-    constructor(id: string, params: { id: string }) {
+    constructor(id: string, params: DeleteItemParamsDto) {
         super('delete_item', id);
         this.params = params;
     }
 }
 
 class ListItemsRequest extends JsonRpcRequest {
-    params: Record<string, never> = {};
+    @ValidateNested()
+    @Type(() => NoParamsDto)
+    params: NoParamsDto = new NoParamsDto();
 
     constructor(id: string) {
         super('list_items', id);
@@ -98,7 +134,9 @@ class ListItemsRequest extends JsonRpcRequest {
 }
 
 class DeleteAllItemsRequest extends JsonRpcRequest {
-    params: Record<string, never> = {};
+    @ValidateNested()
+    @Type(() => NoParamsDto)
+    params: NoParamsDto = new NoParamsDto();
 
     constructor(id: string) {
         super('delete_all_items', id);
@@ -106,7 +144,7 @@ class DeleteAllItemsRequest extends JsonRpcRequest {
 }
 
 @JsonController()
-class JsonRpcController {
+export class JsonRpcController {
     private items: Map<string, Item> = new Map();
 
     @Post('/jsonrpc')
@@ -238,25 +276,35 @@ const app = createExpressServer({
     defaultErrorHandler: false
 });
 
-// Set up Swagger UI
+// Apply middleware directly to the app instance if needed
+app.use(express.json());
+
+// Set up Swagger UI on the app instance
 setupSwagger(app);
 
 // Error handling middleware
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-    console.error(err);
-    res.status(err.status || 500).json({
+    console.error("Unhandled Error:", err);
+    const requestId = (req.body && req.body.id) ? req.body.id : null;
+    res.status(500).json({
         jsonrpc: '2.0',
         error: {
             code: -32000,
             message: err.message || 'Internal server error'
         },
-        id: null
+        id: requestId
     });
 });
 
 const PORT = process.env.PORT || 5001;
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
 
+// Start listening only if the script is executed directly
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+        console.log(`Swagger UI available at http://localhost:${PORT}/api-docs`);
+    });
+}
+
+// Export the configured app instance for testing or programmatic use
 export { app }; 

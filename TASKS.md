@@ -61,13 +61,14 @@
      - ajv for runtime schema validation
 
   Next Steps:
-  - [ ] Create OpenAPI specification for current endpoints
-    - [ ] Define schemas for Item and all request/response types
-    - [ ] Document all JSON-RPC methods
-    - [ ] Add error responses and codes
-    - [ ] Include example requests/responses
-  - [ ] Set up Swagger UI for API exploration
-  - [ ] Add API documentation generation to build process
+  - [x] Create OpenAPI specification for current endpoints
+    - [x] Define schemas for Item and all request/response types
+    - [x] Document all JSON-RPC methods
+    - [x] Add error responses and codes
+    - [x] Include example requests/responses
+  - [x] Add unit tests for the swagger
+  - [x] Set up Swagger UI for API exploration
+  - [x] Add API documentation generation to build process
   - [ ] Update README with API documentation information
 
 ## Backlog
